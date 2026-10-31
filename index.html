@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEASHELL</title>
+
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .shells {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .shell {
+      width: 150px;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .shell img {
+      display: block;
+      width: 100%;
+    }
+
+    .shell:disabled {
+      cursor: default;
+    }
+
+    @media (max-width: 600px) {
+      .shells {
+        gap: 8px;
+      }
+
+      .shell {
+        width: 21vw;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shells">
+    <button class="shell" data-song="song1.mp3">
+      <img src="shell.jpg" alt="소라 1">
+    </button>
+
+    <button class="shell" data-song="song2.mp3">
+      <img src="shell.jpg" alt="소라 2">
+    </button>
+
+    <button class="shell" data-song="song3.mp3">
+      <img src="shell.jpg" alt="소라 3">
+    </button>
+
+    <button class="shell" data-song="song4.mp3">
+      <img src="shell.jpg" alt="소라 4">
+    </button>
+  </div>
+
+  <script>
+    const shells = document.querySelectorAll(".shell");
+    const used = new Set();
+    let playing = false;
+
+    shells.forEach((shell, index) => {
+      shell.addEventListener("click", () => {
+        if (playing || used.has(index)) return;
+
+        playing = true;
+        used.add(index);
+
+        shells.forEach(button => {
+          button.disabled = true;
+        });
+
+        const audio = new Audio(shell.dataset.song);
+
+        function finish() {
+          playing = false;
+
+          shells.forEach((button, i) => {
+            button.disabled = used.has(i);
+          });
+        }
+
+        audio.addEventListener("ended", finish, { once: true });
+        audio.addEventListener("error", finish, { once: true });
+
+        audio.play().catch(finish);
+      });
+    });
+  </script>
+
+</body>
+</html>
